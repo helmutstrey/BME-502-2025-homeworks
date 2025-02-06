@@ -1,0 +1,63 @@
+# Homework 1
+
+## Solve 3 out of 4 programming problems
+
+**Important note for all homeworks: when an exercise says _"use function `function_name` to do something"_, you need to first learn how to use the function. For this, you access the function's documentation string, using the help mode (type `?` or `@doc` in the Julia console and then type the function name)!**
+
+## Babylonian square root
+To get the square root of $y$ Babylonians used the algorithm $x_{n+1} = \frac{1}{2}(x_n + \frac{y}{x_n})$ iteratively starting from some value $x_0$ to converge to $x_n \to \sqrt{y}$ as $n\to \infty$. Implement this algorithm in a function `babylonian(y, ε, x0 = 1)` (default optional argument `x0`), that takes some convergence tolerance `ε` to compare with the built-in `sqrt(y)`. The function should return the steps it took to reach the square root value within given tolerance.
+
+_Hint: for this exercise you only need a `while` code block without any other code structures such as `for, if, ...`._
+
+babystep(x, y) = 0.5(x + y/x)
+function babylonian(y, ε, x0 = 1.0)
+    n, x, xn = 0, x0, Inf
+    while abs(x - xn) > ε
+        xn = x
+        x = babystep(xn, y)
+        n += 1
+    end
+    return n
+end
+babylonian(2, 1e-12)
+
+## Counting nucleotides
+Create a function that given a DNA strand (as a `String`, e.g. `"AGAGAGATCCCTTA"`) it counts how much of each nucleotide (A G T or C) is present in the strand and returns the result as a dictionary mapping the nucleotides to their counts. The function should throw an error (using the `error` function) if an invalid nucleotide is encountered. Test your result with `"ATATATAGGCCAX"` and `"ATATATAGGCCAA"`.
+
+*Hint: Strings are iterables! They iterate over the characters they contain.*
+
+function count_nucleotides(strand)
+    occurence = Dict('A' => 0, 'C' => 0, 'G' => 0, 'T' => 0) #Function that gives us the number of nucleotides in the DNA
+    for nucleotide in strand #defines the letters in the string as "nucleotides"
+        if !haskey(occurence, nucleotide) #if the nucleotide defined in the dictionary is found in the string, returns as true
+            error("unknown nucleotide $(nucleotide)!") #returns an error message and iterates within that message saying which nucleotide is wrong
+        end
+        occurence[nucleotide] += 1
+    end
+    return occurence
+end
+
+#Will work just fine
+count_nucleotides("AGAGAGATCCCTTA")
+
+#Will return error message when ran
+#count_nucleotides("ATATATAGGCCAX")
+
+## Fibonacci numbers
+Using recursion (a function that calls itself) create a function that given an integer `n` it returns the `n`-th [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number). Apply it using `map` to the range `1:8` to get the result `[1,1,2,3,5,8,13]`.
+function fibonacci(n)
+    n ∈ (1, 2) && return 1
+    return fibonacci(n-1) + fibonacci(n-2)
+end
+fibonacci(5)
+fibonacci.(1:8)
+fib_sequence = map(fibonacci, 1:8)[1:7]  # Compute for 1:8, then take first 7 elements
+println(fib_sequence)
+
+## Hamming distance
+
+Create a function that calculates the Hamming distance of two equal DNA strands, given as strings. This distance is defined by counting (sequentially) the number of non-equal letters in the two strands, e.g. `"ATA"` and `"ATC"` have distance of 1, while `"ATC"` and `"CAT"` have distance of 3. 
+
+*Hint: this exercise has a one-liner solution, using the `zip` and `count` functions.*
+hamming(s1, s2) = count(pair -> pair[1] ≠ pair[2], zip(s1, s2))
+hamming("ATC", "CAT")
